@@ -37,21 +37,26 @@ if st.button("Zoek Literatuur"):
 import json
 import streamlit as st
 
-# Controleer of de AI-reactie een geldig JSON-object is
+# Probeer de AI-uitvoer correct te verwerken
 try:
-    antwoord_dict = json.loads(antwoord.json())  # Zet om naar een Python dictionary
-    
-    # Controleer of 'content' in het antwoord zit en toon het
+    # Zorg ervoor dat 'antwoord' correct wordt opgehaald als JSON
+    if isinstance(antwoord, str):  # Controleer of antwoord een string is
+        antwoord_dict = json.loads(antwoord)  # Zet om naar een Python dictionary
+    else:
+        antwoord_dict = antwoord  # Als het al een dictionary is, gebruik het direct
+
+    # Controleer of de 'content' key bestaat in de JSON response
     if "content" in antwoord_dict:
         st.subheader("AI-Antwoord:")
-        st.write(antwoord_dict["content"])  # Alleen de relevante tekst weergeven
+        st.write(antwoord_dict["content"])  # Toon alleen de relevante AI-output
     else:
-        st.warning("Geen geldig AI-antwoord ontvangen.")
+        st.warning("Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
 
 except json.JSONDecodeError:
-    st.error("Fout bij verwerken van AI-reactie. Probeer het opnieuw.")
-    else:
-        st.warning("Voer zowel een API sleutel als een onderzoeksvraag in!")
+    st.error("Fout bij het verwerken van de AI-uitvoer. Probeer het opnieuw.")
+except Exception as e:
+    st.error(f"Onverwachte fout: {e}")
+
 
 import pandas as pd
 
