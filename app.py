@@ -26,31 +26,37 @@ onderzoeksvraag = st.text_area("Voer je onderzoeksvraag in:")
 if st.button("Zoek Literatuur"):
     if api_key and onderzoeksvraag:
         try:
-            llm = ChatOpenAI(model=model, temperature=0.3, openai_api_key=api_key)
+            # ✅ Test de API-output en toon de ruwe response voor debugging
+try:
+    llm = ChatOpenAI(model=model, temperature=0.3, openai_api_key=api_key)
 
-            prompt = PromptTemplate(
-                input_variables=["onderzoeksvraag"],
-                template="Geef een overzicht van de meest relevante literatuur over {onderzoeksvraag}."
-            )
-            
-            antwoord = llm.invoke(prompt.format(onderzoeksvraag=onderzoeksvraag))
+    prompt = PromptTemplate(
+        input_variables=["onderzoeksvraag"],
+        template="Geef een overzicht van de meest relevante literatuur over {onderzoeksvraag}."
+    )
 
-            # ✅ Probeer de AI-uitvoer correct te verwerken
-            if isinstance(antwoord, str):
-                antwoord_dict = json.loads(antwoord)
-            else:
-                antwoord_dict = antwoord  # Gebruik het direct als het al een dictionary is
+    antwoord = llm.invoke(prompt.format(onderzoeksvraag=onderzoeksvraag))
 
-            if "content" in antwoord_dict:
-                st.subheader("AI-Antwoord:")
-                st.write(antwoord_dict["content"])  # Alleen de relevante AI-output tonen
-            else:
-                st.warning("Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
+    st.subheader("AI-Ruwe Output (Debug)")
+    st.json(antwoord)  # ✅ Toont de volledige JSON-response voor debugging
 
-        except json.JSONDecodeError:
-            st.error("Fout bij het verwerken van de AI-uitvoer. Probeer het opnieuw.")
-        except Exception as e:
-            st.error(f"Onverwachte fout: {e}")
+    # Controleer of antwoord een string is en converteer naar een dictionary
+    if isinstance(antwoord, str):
+        antwoord_dict = json.loads(antwoord)
+    else:
+        antwoord_dict = antwoord
+
+    # ✅ Controleer of 'content' aanwezig is
+    if "content" in antwoord_dict:
+        st.subheader("AI-Antwoord:")
+        st.write(antwoord_dict["content"])
+    else:
+        st.warning("Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
+
+except json.JSONDecodeError:
+    st.error("Fout bij het verwerken van de AI-uitvoer. Probeer het opnieuw.")
+except Exception as e:
+    st.error(f"Onverwachte fout: {e}")
     else:
         st.warning("Voer zowel een API-sleutel als een onderzoeksvraag in!")
 
