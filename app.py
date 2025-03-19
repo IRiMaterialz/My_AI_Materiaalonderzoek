@@ -30,10 +30,13 @@ if st.button("🔍 Zoek Literatuur"):
             # ✅ Maak verbinding met OpenAI
             llm = ChatOpenAI(model=model, temperature=0.3, openai_api_key=api_key)
 
-            # ✅ Maak de prompt voor AI
+            # ✅ Maak de prompt voor AI (10 studies met bronvermelding)
             prompt = PromptTemplate(
                 input_variables=["onderzoeksvraag"],
-                template="Geef een overzicht van de meest relevante literatuur over {onderzoeksvraag}."
+                template="""
+                Geef een overzicht van de 10 meest relevante wetenschappelijke studies over {onderzoeksvraag}, 
+                inclusief een korte samenvatting en de bronvermelding (auteur, titel, publicatiejaar, en DOI of link indien beschikbaar).
+                """
             )
 
             # ✅ Vraag OpenAI om een antwoord
@@ -41,7 +44,7 @@ if st.button("🔍 Zoek Literatuur"):
 
             # ✅ Haal alleen de AI-content eruit
             if hasattr(antwoord, "content"):
-                st.subheader("📚 AI-Antwoord:")
+                st.subheader("📚 AI-Antwoord: 10 Wetenschappelijke Studies met Bronvermelding")
                 st.write(antwoord.content)  # Toon alleen de relevante AI-output
             else:
                 st.warning("⚠ Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
@@ -61,13 +64,22 @@ if uploaded_file:
         st.write("📊 Geüploade Meetdata:")
         st.dataframe(metingen)
 
-        # ✅ Vergelijking met literatuurwaarden
-        literatuur_waarden = {"gemiddelde": 0.10, "tolerantie": 0.02}
-        metingen["afwijking"] = metingen["efflorescentie"] - literatuur_waarden["gemiddelde"]
-        metingen["acceptabel"] = metingen["afwijking"].abs() <= literatuur_waarden["tolerantie"]
+        # ✅ Debug: Toon de kolomnamen om fouten te voorkomen
+        st.subheader("🛠 CSV Kolomnamen (Debug)")
+        st.write(metingen.columns.tolist())  # Toon alle kolomnamen
+        
+        # ✅ Controleer of de kolom 'efflorescentie' bestaat
+        if "efflorescentie" not in metingen.columns:
+            st.error("❌ Fout: De kolom 'efflorescentie' ontbreekt in het CSV-bestand.")
+            st.warning("⚠ Controleer de CSV en hernoem de kolom naar 'efflorescentie' als dat nodig is.")
+        else:
+            # ✅ Vergelijking met literatuurwaarden uitvoeren
+            literatuur_waarden = {"gemiddelde": 0.10, "tolerantie": 0.02}
+            metingen["afwijking"] = metingen["efflorescentie"] - literatuur_waarden["gemiddelde"]
+            metingen["acceptabel"] = metingen["afwijking"].abs() <= literatuur_waarden["tolerantie"]
 
-        st.subheader("📊 Vergelijking met Literatuur:")
-        st.dataframe(metingen)
+            st.subheader("📊 Vergelijking met Literatuur:")
+            st.dataframe(metingen)
 
     except Exception as e:
         st.error(f"❌ Fout bij het verwerken van de meetdata: {e}")
