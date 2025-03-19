@@ -34,22 +34,22 @@ if st.button("Zoek Literatuur"):
         
         antwoord = llm.invoke(prompt.format(onderzoeksvraag=onderzoeksvraag))
         st.subheader("AI-Antwoord:")
-        import json
+       import json
+import streamlit as st
 
 # Controleer of de AI-reactie een geldig JSON-object is
 try:
     antwoord_dict = json.loads(antwoord.json())  # Zet om naar een Python dictionary
     
-    # Haal alleen de relevante content op (de daadwerkelijke tekst)
+    # Controleer of 'content' in het antwoord zit en toon het
     if "content" in antwoord_dict:
         st.subheader("AI-Antwoord:")
-        st.write(antwoord_dict["content"])  # Alleen de inhoud weergeven
+        st.write(antwoord_dict["content"])  # Alleen de relevante tekst weergeven
     else:
         st.warning("Geen geldig AI-antwoord ontvangen.")
 
 except json.JSONDecodeError:
     st.error("Fout bij verwerken van AI-reactie. Probeer het opnieuw.")
-
 
     else:
         st.warning("Voer zowel een API sleutel als een onderzoeksvraag in!")
