@@ -14,6 +14,9 @@ st.set_page_config(page_title="AI Ondersteund Materiaalonderzoek", layout="wide"
 st.title("🔬 AI Ondersteund Materiaalonderzoek")
 st.write("Welkom bij je AI-gestuurde onderzoeksapp! 🚀")
 
+# ✅ Debug Mode (schakel aan/uit voor debugging)
+DEBUG_MODE = False  # Zet op True om debugging aan te zetten
+
 # ✅ OpenAI API Sleutel invoeren
 api_key = st.text_input("🔑 Voer je OpenAI API sleutel in:", type="password")
 
@@ -64,9 +67,10 @@ if uploaded_file:
         st.write("📊 Geüploade Meetdata:")
         st.dataframe(metingen)
 
-        # ✅ Debug: Toon de kolomnamen om fouten te voorkomen
-        st.subheader("🛠 CSV Kolomnamen (Debug)")
-        st.write(metingen.columns.tolist())  # Toon alle kolomnamen
+        # ✅ (Optioneel) Debug: Toon de kolomnamen om fouten te voorkomen
+        if DEBUG_MODE:
+            st.subheader("🛠 CSV Kolomnamen (Debug)")
+            st.write(metingen.columns.tolist())  # Toon alle kolomnamen
         
         # ✅ Controleer of de kolom 'efflorescentie' bestaat
         if "efflorescentie" not in metingen.columns:
