@@ -50,7 +50,6 @@ try:
 
 except json.JSONDecodeError:
     st.error("Fout bij verwerken van AI-reactie. Probeer het opnieuw.")
-
     else:
         st.warning("Voer zowel een API sleutel als een onderzoeksvraag in!")
 
