@@ -39,34 +39,15 @@ if st.button("🔍 Zoek Literatuur"):
             # ✅ Vraag OpenAI om een antwoord
             antwoord = llm.invoke(prompt.format(onderzoeksvraag=onderzoeksvraag))
 
-            # ✅ Debug: toon de ruwe output
-            st.subheader("🛠 AI-Ruwe Output (Debug)")
-            st.json(antwoord)  # Toont de volledige JSON-response voor debugging
-
-            # ✅ Extract AI-content uit OpenAI JSON-output
-            try:
-                if isinstance(antwoord, str):
-                    antwoord_dict = json.loads(antwoord)
-                else:
-                    antwoord_dict = antwoord  # Gebruik direct als het al een dictionary is
-
-                # ✅ Controleer of het OpenAI-formaat klopt
-                if isinstance(antwoord_dict, dict) and "choices" in antwoord_dict:
-                    # ✅ Haal de daadwerkelijke AI-tekst eruit
-                    ai_text = antwoord_dict["choices"][0]["message"]["content"]
-
-                    st.subheader("📚 AI-Antwoord:")
-                    st.write(ai_text)  # Toon alleen de AI-gegenereerde content
-                else:
-                    st.warning("⚠ Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
-
-            except json.JSONDecodeError:
-                st.error("❌ Fout bij het verwerken van de AI-uitvoer. Probeer het opnieuw.")
-            except Exception as e:
-                st.error(f"❌ Onverwachte fout: {e}")
+            # ✅ Haal alleen de AI-content eruit
+            if hasattr(antwoord, "content"):
+                st.subheader("📚 AI-Antwoord:")
+                st.write(antwoord.content)  # Toon alleen de relevante AI-output
+            else:
+                st.warning("⚠ Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
 
         except Exception as e:
-            st.error(f"❌ Fout bij het aanroepen van OpenAI API: {e}")
+            st.error(f"❌ Fout bij het verwerken van de AI-uitvoer: {e}")
     else:
         st.warning("⚠ Voer zowel een API-sleutel als een onderzoeksvraag in!")
 
@@ -113,28 +94,12 @@ if uploaded_file and st.button("📄 Genereer Rapport"):
             literatuur="Volgens studies is de gemiddelde efflorescentie 0.10 mg/cm²."
         ))
 
-        # ✅ Debugging: Toon de ruwe output
-        st.subheader("🛠 AI-Ruwe Output (Debug)")
-        st.json(rapport)  # Toont de volledige JSON-response voor debugging
-
-        # ✅ Extract AI-content uit OpenAI JSON-output
-        try:
-            if isinstance(rapport, str):
-                rapport_dict = json.loads(rapport)
-            else:
-                rapport_dict = rapport
-
-            if isinstance(rapport_dict, dict) and "choices" in rapport_dict:
-                ai_text = rapport_dict["choices"][0]["message"]["content"]
-                st.subheader("📄 Gegenereerd Rapport")
-                st.write(ai_text)
-            else:
-                st.warning("⚠ Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
-
-        except json.JSONDecodeError:
-            st.error("❌ Fout bij het verwerken van de AI-uitvoer. Probeer het opnieuw.")
-        except Exception as e:
-            st.error(f"❌ Onverwachte fout: {e}")
+        # ✅ Haal alleen de AI-content eruit
+        if hasattr(rapport, "content"):
+            st.subheader("📄 Gegenereerd Rapport")
+            st.write(rapport.content)
+        else:
+            st.warning("⚠ Geen geldig AI-antwoord ontvangen. Controleer de API-output.")
 
     except Exception as e:
         st.error(f"❌ Fout bij het genereren van het rapport: {e}")
