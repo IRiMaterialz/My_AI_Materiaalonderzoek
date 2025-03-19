@@ -34,7 +34,7 @@ if st.button("Zoek Literatuur"):
         
         antwoord = llm.invoke(prompt.format(onderzoeksvraag=onderzoeksvraag))
         st.subheader("AI-Antwoord:")
-       import json
+import json
 import streamlit as st
 
 # Controleer of de AI-reactie een geldig JSON-object is
